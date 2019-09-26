@@ -1,18 +1,20 @@
 # Modified from https://aiohttp.readthedocs.io/en/stable/
 from aiohttp import web
-from jinja2 import Template
+from jinja2 import Template, FileSystemLoader, Environment
 
 
 # aiohttp
 app = web.Application()
 routes = web.RouteTableDef()
 
+# jinja2
+env = Environment(loader=FileSystemLoader('templates'))
 
 @routes.get('/')
 @routes.get('/{name}')
 async def handle(request):
     name = request.match_info.get('name', "Anonymous")
-    text = Template('Hello {{name}}!').render(name=name)
+    text = env.get_template('hello-name.html').render(name=name)
     return web.Response(text=text)
 
 

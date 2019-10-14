@@ -20,11 +20,20 @@ function Square(props) {
     }
 
     handleClick(i) {
+      // Copy state
       const squares = this.state.squares.slice();
-      squares[i] = this.state.xIsNext ? 'X' : 'O';
+      var xIsNext = Boolean(this.state.xIsNext);
+
+      // Mutate copied state
+      if(squares[i] == null) {
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        xIsNext = !this.state.xIsNext;
+      }
+
+      // Write state
       this.setState({
         squares: squares,
-        xIsNext: !this.state.xIsNext,
+        xIsNext: xIsNext,
       });
     }
 

@@ -11,6 +11,8 @@ def get_symbols(in_str):
 
     symbols = []
 
+    valid_operators = ['+', '-', '/', '*', '^', '(', ')']
+
     current_num = ''
     for c in in_str:
         if c.isdigit() or c == '.':
@@ -21,6 +23,9 @@ def get_symbols(in_str):
         elif current_num:
             symbols.append(_str_to_num(current_num))
             current_num = ''
+
+        if c in valid_operators:
+            symbols.append(c)
 
     if current_num:
         symbols.append(_str_to_num(current_num))

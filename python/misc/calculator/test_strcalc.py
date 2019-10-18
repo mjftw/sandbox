@@ -1,6 +1,6 @@
 import pytest
 
-from strcalc import get_symbols, ParseError
+from strcalc import get_symbols, calculate, ParseError
 
 ### TESTS ###
 # get_symbols()
@@ -53,3 +53,30 @@ def test_get_symbols_catches_invalid_symbols():
     with pytest.raises(ParseError):
         get_symbols('#')
 
+# calculate
+def test_calculate_handles_2_num_addition():
+    assert calculate('2 + 2') == 4
+
+def test_calculate_handles_3_num_addition():
+    assert calculate('2 + 2 + 2') == 6
+
+def test_calculate_handles_2_num_subtraction():
+    assert calculate('5 - 3') == 2
+
+def test_calculate_handles_3_num_subtraction():
+    assert calculate('10 - 2 - 1') == 7
+
+def test_calculate_handles_3_num_addition_subtraction():
+    assert calculate('5 - 3 + 8') == 10
+
+def test_calculate_handles_plus_plus():
+    assert calculate('5 + +3') == 8
+
+def test_calculate_handles_plus_minus():
+    assert calculate('5 + -3') == 2
+
+def test_calculate_handles_minus_plus():
+    assert calculate('5 - +3') == 2
+
+def test_calculate_handles_minus_minus():
+    assert calculate('5 - -2') == 7

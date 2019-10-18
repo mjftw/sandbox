@@ -41,3 +41,47 @@ def get_symbols(in_str):
         symbols.append(_str_to_num(current_num))
 
     return symbols
+
+def compute_symbols(num1, sym, num2):
+    answer = None#
+
+    if sym == '+':
+        answer = num1 + num2
+    elif sym == '-':
+        answer = num1 - num2
+
+    return answer
+
+def calculate(in_str):
+    answer = None
+
+    symbols = get_symbols(in_str)
+
+    num_memory = None
+    sym_memory = None
+    for s in symbols:
+        if isinstance(s, int) or isinstance(s, float):
+            if num_memory and sym_memory:
+                num_memory = compute_symbols(num_memory, sym_memory, s)
+                sym_memory = None
+            elif not num_memory:
+                num_memory = s
+            else:
+                raise ParseError(
+                    'Cannot have two numbers in a row: {}, {}'.format(
+                        num_memory, s))
+        elif sym_memory is None:
+            sym_memory = s
+        else:
+            if sym_memory == '+' and s == '+':
+                sym_memory = '+'
+            elif sym_memory == '+' and s == '-':
+                sym_memory = '-'
+            elif sym_memory == '-' and s == '+':
+                sym_memory = '-'
+            elif sym_memory == '-' and s == '-':
+                sym_memory = '+'
+
+    answer = num_memory
+
+    return answer

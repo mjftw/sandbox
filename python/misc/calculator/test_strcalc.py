@@ -80,3 +80,9 @@ def test_calculate_handles_minus_plus():
 
 def test_calculate_handles_minus_minus():
     assert calculate('5 - -2') == 7
+
+def test_calculate_handles_leading_plus():
+    assert calculate('+5 - 2') == 3
+
+def test_calculate_handles_leading_minus():
+    assert calculate('-5 - 2') == -7

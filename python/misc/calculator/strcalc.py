@@ -61,10 +61,13 @@ def calculate(in_str):
     sym_memory = None
     for s in symbols:
         if isinstance(s, int) or isinstance(s, float):
-            if num_memory and sym_memory:
+            if sym_memory == '-':
+                sym_memory = '+'
+                s = -s
+            if num_memory is not None and sym_memory:
                 num_memory = compute_symbols(num_memory, sym_memory, s)
                 sym_memory = None
-            elif not num_memory:
+            elif num_memory is None:
                 num_memory = s
             else:
                 raise ParseError(

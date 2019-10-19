@@ -54,6 +54,12 @@ def test_get_symbols_catches_invalid_symbols():
         get_symbols('#')
 
 # calculate
+def test_calculate_handles_empty():
+    assert calculate('') == 0
+
+def test_calculate_handles_no_op():
+    assert calculate('5') == 5
+
 def test_calculate_handles_2_num_addition():
     assert calculate('2 + 2') == 4
 
@@ -86,3 +92,15 @@ def test_calculate_handles_leading_plus():
 
 def test_calculate_handles_leading_minus():
     assert calculate('-5 - 2') == -7
+
+def test_calculate_handles_minus_minus_minus():
+    assert calculate('5 --- 2') == 3
+
+def test_calculate_handles_plus_plus_plus():
+    assert calculate('5 +++ 2') == 7
+
+def test_calculate_multiplication():
+    assert calculate('5 * 2') == 10
+
+def test_calculate_multiplication_addition():
+    assert calculate('1 - 5 * 2') == -9

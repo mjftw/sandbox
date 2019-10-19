@@ -42,20 +42,28 @@ def get_symbols(in_str):
 
     return symbols
 
-def compute_symbols(num1, sym, num2):
-    answer = None#
+def do_operation(num1, op, num2):
+    answer = None
 
-    if sym == '+':
+    if op == '+':
         answer = num1 + num2
-    elif sym == '-':
+    elif op == '-':
         answer = num1 - num2
+    elif op == '*':
+        answer = num1 * num2
+    else:
+        raise ParseError('Unsupported operator: {}'.format(op))
 
     return answer
 
 def calculate(in_str):
-    answer = None
-
     symbols = get_symbols(in_str)
+    answer = calculate_symbols(symbols)
+
+    return answer
+
+def calculate_symbols(symbols):
+    answer = None
 
     num_memory = None
     sym_memory = None
@@ -65,7 +73,7 @@ def calculate(in_str):
                 sym_memory = '+'
                 s = -s
             if num_memory is not None and sym_memory:
-                num_memory = compute_symbols(num_memory, sym_memory, s)
+                num_memory = do_operation(num_memory, sym_memory, s)
                 sym_memory = None
             elif num_memory is None:
                 num_memory = s
@@ -85,6 +93,6 @@ def calculate(in_str):
             elif sym_memory == '-' and s == '-':
                 sym_memory = '+'
 
-    answer = num_memory
+    answer = num_memory or 0
 
     return answer

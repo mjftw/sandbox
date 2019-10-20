@@ -15,14 +15,35 @@ class SymbolTreeNode:
 
     def remove_enclosing_brackets(self):
         if self.symbols[0] == '(' and self.symbols[-1] == ')':
-            del(self.symbols[0])
-            del(self.symbols[-1])
+            remove_enclosing = True
+            bracket_num = 0
+            for i, s in enumerate(self.symbols):
+                if s == '(':
+                    bracket_num += 1
+                elif s == ')':
+                    bracket_num -= 1
+                if bracket_num == 0 and i != (len(self.symbols)-1):
+                    remove_enclosing = False
+                    break
+
+            if remove_enclosing:
+                del(self.symbols[0])
+                del(self.symbols[-1])
+        print('A: {}'.format(self.symbols))
 
     def find_children(self):
-        # Brackets search
+        self.find_children_brackets()
+        self.find_children_num_op_num('+')
+        self.find_children_num_op_num('-')
+        self.find_children_num_op_num('*')
+        self.find_children_num_op_num('/')
+        self.find_children_num_op_num('^')
+
+    def find_children_brackets(self):
         open_bracket_pos = []
         close_bracket_pos = None
-        for i, s in enumerate(self.symbols):
+        i = 0
+        for s in self.symbols:
             if s == '(':
                 open_bracket_pos.append(i)
             elif s ==')':
@@ -32,13 +53,48 @@ class SymbolTreeNode:
                 close_bracket_pos = i
 
             if open_bracket_pos and close_bracket_pos is not None:
+                len_before = len(self.symbols)
                 self.insert_child(open_bracket_pos[-1], close_bracket_pos+1)
-                open_bracket_pos.pop()
 
+                len_change = len_before - len(self.symbols)
+
+                # Alter open positions for new symbols list
+                i -= len_change
+                for p in open_bracket_pos:
+                    p -= len_change
+
+                open_bracket_pos.pop()
+                close_bracket_pos = None
+
+            i += 1
         if open_bracket_pos:
             if close_bracket_pos is None:
                 raise ParseError('Missing closing bracket: {}[{}]'.format(
                     self.symbols, i))
+
+    def find_children_num_op_num(self, op):
+        try:
+            op_pos = self.symbols.index(op)
+        except ValueError:
+            return
+
+        new_syms = []
+        s_before = self.symbols[:op_pos]
+        s_after = self.symbols[op_pos+1:]
+
+        if len(s_before) == 1:
+            new_syms.append(s_before[0])
+        else:
+            new_syms.append(SymbolTreeNode(s_before))
+
+        new_syms.append(op)
+
+        if len(s_after) == 1:
+            new_syms.append(s_after[0])
+        else:
+            new_syms.append(SymbolTreeNode(s_after))
+
+        self.symbols = new_syms
 
     def insert_child(self, open_idx, close_idx):
         new_syms = self.symbols[:open_idx]

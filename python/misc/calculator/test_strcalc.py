@@ -1,6 +1,6 @@
 import pytest
 
-from strcalc import get_symbols, calculate, ParseError, SymbolTreeNode
+from strcalc import get_symbols, ParseError, SymbolTreeNode
 
 ### TESTS ###
 # get_symbols()
@@ -68,7 +68,7 @@ def test_SymbolTreeNode_err_missing_open_bracket():
     with pytest.raises(ParseError):
         SymbolTreeNode(
             get_symbols(
-                '1 + 1)'
+                '1)'
             )
         )
 
@@ -76,7 +76,7 @@ def test_SymbolTreeNode_err_missing_close_bracket():
     with pytest.raises(ParseError):
         SymbolTreeNode(
             get_symbols(
-                '(1 + 1'
+                '(1'
             )
         )
 
@@ -106,6 +106,78 @@ def test_SymbolTreeNode_nested_brackets_2deep():
             )
         )
     ) == "[1, 3.1, [2, 9, [1, 0]]]"
+
+def test_SymbolTreeNode_brackets_many_sets():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '(1 3 7) (2 9) 4 (1 0)'
+            )
+        )
+    ) == "[[1, 3, 7], [2, 9], 4, [1, 0]]"
+
+def test_SymbolTreeNode_split_add():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 1 + 1 + 1'
+            )
+        )
+    ) == "[[1, 1], '+', [1, '+', 1]]"
+
+def test_SymbolTreeNode_split_subtract():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 1 - 1 - 1'
+            )
+        )
+    ) == "[[1, 1], '-', [1, '-', 1]]"
+
+def test_SymbolTreeNode_split_add_subtract():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 1 - 1 + 1'
+            )
+        )
+    ) == "[[[1, 1], '-', 1], '+', 1]"
+
+def test_SymbolTreeNode_split_multiply():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 1 * 1 * 1'
+            )
+        )
+    ) == "[[1, 1], '*', [1, '*', 1]]"
+
+def test_SymbolTreeNode_split_divide():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 1 / 1 / 1'
+            )
+        )
+    ) == "[[1, 1], '/', [1, '/', 1]]"
+
+def test_SymbolTreeNode_split_power():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 1 ^ 1 ^ 1'
+            )
+        )
+    ) == "[[1, 1], '^', [1, '^', 1]]"
+
+def test_SymbolTreeNode_all_ops():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '(1*2)^3+4-(5/6)'
+            )
+        )
+    ) == "[[[1, '*', 2], '^', 3], '+', [4, '-', [5, '/', 6]]]"
 
 # # calculate
 # def test_calculate_handles_empty():

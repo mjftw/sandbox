@@ -1,6 +1,6 @@
 import pytest
 
-from strcalc import get_symbols, calculate, ParseError
+from strcalc import get_symbols, calculate, ParseError, SymbolTreeNode
 
 ### TESTS ###
 # get_symbols()
@@ -53,54 +53,108 @@ def test_get_symbols_catches_invalid_symbols():
     with pytest.raises(ParseError):
         get_symbols('#')
 
-# calculate
-def test_calculate_handles_empty():
-    assert calculate('') == 0
 
-def test_calculate_handles_no_op():
-    assert calculate('5') == 5
+#SymbolTreeNode
+def test_SymbolTreeNode_repr():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 + 1'
+            )
+        )
+    ) == "[1, '+', 1]"
 
-def test_calculate_handles_2_num_addition():
-    assert calculate('2 + 2') == 4
+def test_SymbolTreeNode_err_missing_open_bracket():
+    with pytest.raises(ParseError):
+        SymbolTreeNode(
+            get_symbols(
+                '1 + 1)'
+            )
+        )
 
-def test_calculate_handles_3_num_addition():
-    assert calculate('2 + 2 + 2') == 6
+def test_SymbolTreeNode_err_missing_close_bracket():
+    with pytest.raises(ParseError):
+        SymbolTreeNode(
+            get_symbols(
+                '(1 + 1'
+            )
+        )
 
-def test_calculate_handles_2_num_subtraction():
-    assert calculate('5 - 3') == 2
+def test_SymbolTreeNode_remove_enclosing_brackets():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '(1 1)'
+            )
+        )
+    ) == "[1, 1]"
 
-def test_calculate_handles_3_num_subtraction():
-    assert calculate('10 - 2 - 1') == 7
+def test_SymbolTreeNode_nested_brackets_1deep():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 3.1 (2 9)'
+            )
+        )
+    ) == "[1, 3.1, [2, 9]]"
 
-def test_calculate_handles_3_num_addition_subtraction():
-    assert calculate('5 - 3 + 8') == 10
+def test_SymbolTreeNode_nested_brackets_2deep():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '(1 3.1 (2 9 (1 0)))'
+            )
+        )
+    ) == "[1, 3.1, [2, 9, [1, 0]]]"
 
-def test_calculate_handles_plus_plus():
-    assert calculate('5 + +3') == 8
+# # calculate
+# def test_calculate_handles_empty():
+#     assert calculate('') == 0
 
-def test_calculate_handles_plus_minus():
-    assert calculate('5 + -3') == 2
+# def test_calculate_handles_no_op():
+#     assert calculate('5') == 5
 
-def test_calculate_handles_minus_plus():
-    assert calculate('5 - +3') == 2
+# def test_calculate_handles_2_num_addition():
+#     assert calculate('2 + 2') == 4
 
-def test_calculate_handles_minus_minus():
-    assert calculate('5 - -2') == 7
+# def test_calculate_handles_3_num_addition():
+#     assert calculate('2 + 2 + 2') == 6
 
-def test_calculate_handles_leading_plus():
-    assert calculate('+5 - 2') == 3
+# def test_calculate_handles_2_num_subtraction():
+#     assert calculate('5 - 3') == 2
 
-def test_calculate_handles_leading_minus():
-    assert calculate('-5 - 2') == -7
+# def test_calculate_handles_3_num_subtraction():
+#     assert calculate('10 - 2 - 1') == 7
 
-def test_calculate_handles_minus_minus_minus():
-    assert calculate('5 --- 2') == 3
+# def test_calculate_handles_3_num_addition_subtraction():
+#     assert calculate('5 - 3 + 8') == 10
 
-def test_calculate_handles_plus_plus_plus():
-    assert calculate('5 +++ 2') == 7
+# def test_calculate_handles_plus_plus():
+#     assert calculate('5 + +3') == 8
 
-def test_calculate_multiplication():
-    assert calculate('5 * 2') == 10
+# def test_calculate_handles_plus_minus():
+#     assert calculate('5 + -3') == 2
 
-def test_calculate_multiplication_addition():
-    assert calculate('1 - 5 * 2') == -9
+# def test_calculate_handles_minus_plus():
+#     assert calculate('5 - +3') == 2
+
+# def test_calculate_handles_minus_minus():
+#     assert calculate('5 - -2') == 7
+
+# def test_calculate_handles_leading_plus():
+#     assert calculate('+5 - 2') == 3
+
+# def test_calculate_handles_leading_minus():
+#     assert calculate('-5 - 2') == -7
+
+# def test_calculate_handles_minus_minus_minus():
+#     assert calculate('5 --- 2') == 3
+
+# def test_calculate_handles_plus_plus_plus():
+#     assert calculate('5 +++ 2') == 7
+
+# def test_calculate_multiplication():
+#     assert calculate('5 * 2') == 10
+
+# def test_calculate_multiplication_addition():
+#     assert calculate('1 - 5 * 2') == -9

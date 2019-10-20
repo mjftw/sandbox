@@ -174,10 +174,10 @@ def test_SymbolTreeNode_all_ops():
     assert str(
         SymbolTreeNode(
             get_symbols(
-                '(1*2)^3+4-(5/6)'
+                '1*2^3+4-5/6'
             )
         )
-    ) == "[[[1, '*', 2], '^', 3], '+', [4, '-', [5, '/', 6]]]"
+    ) == "[[1, '*', [2, '^', 3]], '+', [4, '-', [5, '/', 6]]]"
 
 # # calculate
 # def test_calculate_handles_empty():

@@ -29,7 +29,6 @@ class SymbolTreeNode:
             if remove_enclosing:
                 del(self.symbols[0])
                 del(self.symbols[-1])
-        print('A: {}'.format(self.symbols))
 
     def find_children(self):
         self.find_children_brackets()

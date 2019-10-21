@@ -288,6 +288,89 @@ def test_SymbolTreeNode_handle_minus_multiply():
             )
         )
 
+def test_SymbolTreeNode_calculate_add():
+    assert SymbolTreeNode(
+        get_symbols(
+            '1 + 1'
+        )
+    ).calculate() == 2
+
+def test_SymbolTreeNode_calculate_add_nested():
+    assert SymbolTreeNode(
+        get_symbols(
+            '1 + 1 + 1'
+        )
+    ).calculate() == 3
+
+def test_SymbolTreeNode_calculate_add_minus_nested():
+    assert SymbolTreeNode(
+        get_symbols(
+            '1 + 1 - 1'
+        )
+    ).calculate() == 1
+
+def test_SymbolTreeNode_calculate_multiply():
+    assert SymbolTreeNode(
+        get_symbols(
+            '1 * 3'
+        )
+    ).calculate() == 3
+
+def test_SymbolTreeNode_calculate_divide():
+    assert SymbolTreeNode(
+        get_symbols(
+            '15 / 3'
+        )
+    ).calculate() == 5
+
+def test_SymbolTreeNode_calculate_power():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2 ^ 3'
+        )
+    ).calculate() == 8
+
+def test_SymbolTreeNode_calculate_mult_add_mult():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2*3 + 6*7'
+        )
+    ).calculate() == 48
+
+def test_SymbolTreeNode_calculate_stacked_ops1():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2*(3+6)*7'
+        )
+    ).calculate() == 126
+
+def test_SymbolTreeNode_calculate_stacked_ops2():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2*(3+6)*7/2'
+        )
+    ).calculate() == 63
+
+def test_SymbolTreeNode_calculate_stacked_ops3():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2^3*(3+6)*7/2'
+        )
+    ).calculate() == 252
+
+def test_SymbolTreeNode_calculate_stacked_ops4():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2^3*(3+6)*7/2-100'
+        )
+    ).calculate() == 152
+
+def test_SymbolTreeNode_calculate_stacked_ops5():
+    assert SymbolTreeNode(
+        get_symbols(
+            '2^3*(3+6)*7/2-(10^2+2)'
+        )
+    ).calculate() == 150
 
 # # calculate
 # def test_calculate_handles_empty():

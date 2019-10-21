@@ -13,6 +13,43 @@ class SymbolTreeNode:
     def __repr__(self):
         return str(self.symbols)
 
+    def calculate(self):
+        num_memory = None
+        sym_memory = None
+        for i, s in enumerate(self.symbols):
+            if isinstance(self.symbols[i], SymbolTreeNode):
+                self.symbols[i] = s.calculate()
+            print('S={}, nM={},  sM={}, s={}'.format(
+                self.symbols, num_memory, sym_memory, self.symbols[i]))
+            if symbol_is_num(self.symbols[i]):
+                if num_memory is not None and sym_memory is not None:
+                    num_memory = self.do_operation(num_memory, sym_memory, self.symbols[i])
+                    sym_memory = None
+                elif num_memory is None:
+                    num_memory = self.symbols[i]
+            elif sym_memory is None:
+                sym_memory = self.symbols[i]
+
+        answer = num_memory or 0
+        print('answer={}'.format(answer))
+        return answer
+
+    def do_operation(self, num1, op, num2):
+        answer = None
+
+        if op == '+':
+            answer = num1 + num2
+        elif op == '-':
+            answer = num1 - num2
+        elif op == '*':
+            answer = num1 * num2
+        elif op == '/':
+            answer = num1 / num2
+        elif op == '^':
+            answer = pow(num1, num2)
+
+        return answer
+
     def remove_enclosing_brackets(self):
         if self.symbols[0] == '(' and self.symbols[-1] == ')':
             remove_enclosing = True
@@ -183,20 +220,6 @@ def symbol_is_num(s):
         isinstance(s, int) or
         isinstance(s, float)
     )
-
-# def do_operation(num1, op, num2):
-#     answer = None
-
-#     if op == '+':
-#         answer = num1 + num2
-#     elif op == '-':
-#         answer = num1 - num2
-#     elif op == '*':
-#         answer = num1 * num2
-#     else:
-#         raise ParseError('Unsupported operator: {}'.format(op))
-
-#     return answer
 
 # def calculate(in_str):
 #     symbols = get_symbols(in_str)

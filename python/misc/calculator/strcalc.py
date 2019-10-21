@@ -32,11 +32,39 @@ class SymbolTreeNode:
 
     def find_children(self):
         self.find_children_brackets()
+        self.consume_extra_pos_neg()
+        self.validate_symbols()
         self.find_children_num_op_num('+')
         self.find_children_num_op_num('-')
         self.find_children_num_op_num('*')
         self.find_children_num_op_num('/')
         self.find_children_num_op_num('^')
+
+
+    def consume_extra_pos_neg(self):
+        new_syms = []
+        for s in reversed(self.symbols):
+            new_syms.append(s)
+
+            if (len(new_syms) > 2 and
+                symbol_is_num(new_syms[-3]) and
+                symbol_is_op(new_syms[-1])):
+                    if new_syms[-2] == '+':
+                        del(new_syms[-2])
+                    elif new_syms[-2] == '-':
+                        new_syms[-3] = -new_syms[-3]
+                        del(new_syms[-2])
+
+        self.symbols = new_syms[::-1]
+
+    def validate_symbols(self):
+        last_s = None
+        for s in self.symbols:
+            if symbol_is_op(last_s) and symbol_is_op(s):
+                raise ParseError(
+                    'Invalid syntax at operators {}, {} in {}'.format(
+                        last_s, s, self.symbols))
+            last_s = s
 
     def find_children_brackets(self):
         open_bracket_pos = []
@@ -141,6 +169,20 @@ def get_symbols(in_str):
         symbols.append(_str_to_num(current_num))
 
     return symbols
+
+def symbol_is_op(s):
+    return (
+        s is not None and
+        not isinstance(s, int) and
+        not isinstance(s, float) and
+        not isinstance(s, SymbolTreeNode)
+    )
+
+def symbol_is_num(s):
+    return (
+        isinstance(s, int) or
+        isinstance(s, float)
+    )
 
 # def do_operation(num1, op, num2):
 #     answer = None

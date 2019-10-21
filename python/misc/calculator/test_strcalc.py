@@ -1,6 +1,7 @@
 import pytest
 
-from strcalc import get_symbols, ParseError, SymbolTreeNode
+from strcalc import get_symbols, symbol_is_num, symbol_is_op,\
+    ParseError, SymbolTreeNode
 
 ### TESTS ###
 # get_symbols()
@@ -53,6 +54,36 @@ def test_get_symbols_catches_invalid_symbols():
     with pytest.raises(ParseError):
         get_symbols('#')
 
+#Helpers
+def test_symbol_is_num_float():
+    assert symbol_is_num(0.1) == True
+
+def test_symbol_is_num_int():
+    assert symbol_is_num(1) == True
+
+def test_symbol_is_num_none():
+    assert symbol_is_num(None) == False
+
+def test_symbol_is_num_str():
+    assert symbol_is_num('h') == False
+
+def test_symbol_is_op_plus():
+    assert symbol_is_op('+') == True
+
+def test_symbol_is_op_minus():
+    assert symbol_is_op('-') == True
+
+def test_symbol_is_op_misc_other_op():
+    assert symbol_is_op('!') == True
+
+def test_symbol_is_op_int():
+    assert symbol_is_op(1) == False
+
+def test_symbol_is_op_float():
+    assert symbol_is_op(1.1) == False
+
+def test_symbol_is_op_none():
+    assert symbol_is_op(None) == False
 
 #SymbolTreeNode
 def test_SymbolTreeNode_repr():
@@ -170,14 +201,93 @@ def test_SymbolTreeNode_split_power():
         )
     ) == "[[1, 1], '^', [1, '^', 1]]"
 
-def test_SymbolTreeNode_all_ops():
+def test_SymbolTreeNode_all_ops_order():
     assert str(
         SymbolTreeNode(
             get_symbols(
-                '1*2^3+4-5/6'
+                '(1*2^3+4-5/6)'
             )
         )
     ) == "[[1, '*', [2, '^', 3]], '+', [4, '-', [5, '/', 6]]]"
+
+def test_SymbolTreeNode_err_double_op():
+    with pytest.raises(ParseError):
+        SymbolTreeNode(
+            get_symbols(
+                '1 * / 1'
+            )
+        )
+
+def test_SymbolTreeNode_err_double_op2():
+    with pytest.raises(ParseError):
+        SymbolTreeNode(
+            get_symbols(
+                '1 * ^ 1'
+            )
+        )
+
+def test_SymbolTreeNode_handle_double_plus():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 + +1'
+            )
+        )
+    ) == "[1, '+', 1]"
+
+def test_SymbolTreeNode_handle_triple_plus():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 + + +1'
+            )
+        )
+    ) == "[1, '+', 1]"
+
+def test_SymbolTreeNode_handle_plus_minus():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 + -1'
+            )
+        )
+    ) == "[1, '+', -1]"
+
+def test_SymbolTreeNode_handle_double_minus():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 - -1'
+            )
+        )
+    ) == "[1, '-', -1]"
+
+def test_SymbolTreeNode_handle_multiply_minus():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 * -1'
+            )
+        )
+    ) == "[1, '*', -1]"
+
+def test_SymbolTreeNode_handle_multiply_plus():
+    assert str(
+        SymbolTreeNode(
+            get_symbols(
+                '1 * +1'
+            )
+        )
+    ) == "[1, '*', 1]"
+
+def test_SymbolTreeNode_handle_minus_multiply():
+    with pytest.raises(ParseError):
+        SymbolTreeNode(
+            get_symbols(
+                '1 - * 1'
+            )
+        )
+
 
 # # calculate
 # def test_calculate_handles_empty():

@@ -1,7 +1,7 @@
 import pytest
 
 from strcalc import get_symbols, symbol_is_num, symbol_is_op,\
-    ParseError, SymbolTreeNode
+    ParseError, SymbolTreeNode, calculate
 
 ### TESTS ###
 # get_symbols()
@@ -385,3 +385,6 @@ def test_SymbolTreeNode_calculate_no_truncate_on_divide():
             '3/2'
         )
     ).calculate() == 1.5
+
+def test_calculate():
+    assert calculate('2^3*(3+6)*7/2-(10^2+(1*2))') == 150

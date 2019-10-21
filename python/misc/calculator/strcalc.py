@@ -167,6 +167,9 @@ class SymbolTreeNode:
         self.symbols = new_syms
 
 
+def calculate(eqation_str):
+    return SymbolTreeNode(get_symbols(eqation_str)).calculate()
+
 def _str_to_num(num_str):
     if '.' in num_str:
         num = float(num_str)

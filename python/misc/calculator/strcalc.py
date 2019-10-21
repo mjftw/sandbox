@@ -7,8 +7,8 @@ class SymbolTreeNode:
         self.symbols = symbols
         self.children = []
 
-        self.remove_enclosing_brackets()
-        self.find_children()
+        self._remove_enclosing_brackets()
+        self._find_children()
 
     def __repr__(self):
         return str(self.symbols)
@@ -50,7 +50,7 @@ class SymbolTreeNode:
 
         return answer
 
-    def remove_enclosing_brackets(self):
+    def _remove_enclosing_brackets(self):
         if self.symbols[0] == '(' and self.symbols[-1] == ')':
             remove_enclosing = True
             bracket_num = 0
@@ -67,18 +67,18 @@ class SymbolTreeNode:
                 del(self.symbols[0])
                 del(self.symbols[-1])
 
-    def find_children(self):
-        self.find_children_brackets()
-        self.consume_extra_pos_neg()
-        self.validate_symbols()
-        self.find_children_num_op_num('+')
-        self.find_children_num_op_num('-')
-        self.find_children_num_op_num('*')
-        self.find_children_num_op_num('/')
-        self.find_children_num_op_num('^')
+    def _find_children(self):
+        self._find_children_brackets()
+        self._consume_extra_pos_neg()
+        self._validate_symbols()
+        self._find_children_num_op_num('+')
+        self._find_children_num_op_num('-')
+        self._find_children_num_op_num('*')
+        self._find_children_num_op_num('/')
+        self._find_children_num_op_num('^')
 
 
-    def consume_extra_pos_neg(self):
+    def _consume_extra_pos_neg(self):
         new_syms = []
         for s in reversed(self.symbols):
             new_syms.append(s)
@@ -94,7 +94,7 @@ class SymbolTreeNode:
 
         self.symbols = new_syms[::-1]
 
-    def validate_symbols(self):
+    def _validate_symbols(self):
         last_s = None
         for s in self.symbols:
             if symbol_is_op(last_s) and symbol_is_op(s):
@@ -103,7 +103,7 @@ class SymbolTreeNode:
                         last_s, s, self.symbols))
             last_s = s
 
-    def find_children_brackets(self):
+    def _find_children_brackets(self):
         open_bracket_pos = []
         close_bracket_pos = None
         i = 0
@@ -118,7 +118,7 @@ class SymbolTreeNode:
 
             if open_bracket_pos and close_bracket_pos is not None:
                 len_before = len(self.symbols)
-                self.insert_child(open_bracket_pos[-1], close_bracket_pos+1)
+                self._insert_child(open_bracket_pos[-1], close_bracket_pos+1)
 
                 len_change = len_before - len(self.symbols)
 
@@ -136,7 +136,7 @@ class SymbolTreeNode:
                 raise ParseError('Missing closing bracket: {}[{}]'.format(
                     self.symbols, i))
 
-    def find_children_num_op_num(self, op):
+    def _find_children_num_op_num(self, op):
         try:
             op_pos = self.symbols.index(op)
         except ValueError:
@@ -160,7 +160,7 @@ class SymbolTreeNode:
 
         self.symbols = new_syms
 
-    def insert_child(self, open_idx, close_idx):
+    def _insert_child(self, open_idx, close_idx):
         new_syms = self.symbols[:open_idx]
         new_syms.append(SymbolTreeNode(self.symbols[open_idx:close_idx]))
         new_syms.extend(self.symbols[close_idx:])

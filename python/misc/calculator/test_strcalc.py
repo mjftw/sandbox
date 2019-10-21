@@ -378,3 +378,10 @@ def test_SymbolTreeNode_calculate_stacked_ops6():
             '2^3*(3+6)*7/2-(10^2+(1*2))'
         )
     ).calculate() == 150
+
+def test_SymbolTreeNode_calculate_no_truncate_on_divide():
+    assert SymbolTreeNode(
+        get_symbols(
+            '3/2'
+        )
+    ).calculate() == 1.5

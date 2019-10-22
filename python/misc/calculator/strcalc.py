@@ -46,6 +46,9 @@ class SymbolTreeNode:
             answer = num1 / num2
         elif op == '^':
             answer = pow(num1, num2)
+        elif self.op_is_valid(op):
+            raise NotImplementedError(
+                'Operator is valid, but not yet supported {}'.format(op))
 
         return answer
 

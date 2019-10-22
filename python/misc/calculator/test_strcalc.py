@@ -337,6 +337,17 @@ def test_SymbolTreeNode_calculate_power():
         )
     ).calculate() == 8
 
+def test_SymbolTreeNode_err_operator_support_not_implimented():
+    SymbolTreeNodeExtended = type('SymbolTreeNodeExtended', (SymbolTreeNode,), {})
+    SymbolTreeNodeExtended.supported_operators.append('¬')
+
+    with pytest.raises(NotImplementedError):
+        SymbolTreeNodeExtended(
+            get_symbols(
+                '2 ¬ 3'
+            )
+        ).calculate()
+
 def test_SymbolTreeNode_calculate_mult_add_mult():
     assert SymbolTreeNode(
         get_symbols(

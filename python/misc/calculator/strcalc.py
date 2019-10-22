@@ -19,8 +19,6 @@ class SymbolTreeNode:
         for i, s in enumerate(self.symbols):
             if isinstance(self.symbols[i], SymbolTreeNode):
                 self.symbols[i] = s.calculate()
-            print('S={}, nM={},  sM={}, s={}'.format(
-                self.symbols, num_memory, sym_memory, self.symbols[i]))
             if symbol_is_num(self.symbols[i]):
                 if num_memory is not None and sym_memory is not None:
                     num_memory = self.do_operation(num_memory, sym_memory, self.symbols[i])
@@ -31,7 +29,6 @@ class SymbolTreeNode:
                 sym_memory = self.symbols[i]
 
         answer = num_memory or 0
-        print('answer={}'.format(answer))
         return answer
 
     def do_operation(self, num1, op, num2):

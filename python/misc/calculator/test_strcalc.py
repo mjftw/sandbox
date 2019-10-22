@@ -50,9 +50,8 @@ def test_get_symbols_float_with_trailing_dot_okay():
 def test_get_symbols_float_with_leading_dot_okay():
     assert get_symbols('.2 +') == [0.2, '+']
 
-def test_get_symbols_catches_invalid_symbols():
-    with pytest.raises(ParseError):
-        get_symbols('#')
+def test_get_symbols_allows_invalid_symbols():
+    assert get_symbols('¬') == ['¬']
 
 #Helpers
 def test_symbol_is_num_float():
@@ -108,6 +107,14 @@ def test_SymbolTreeNode_err_missing_close_bracket():
         SymbolTreeNode(
             get_symbols(
                 '(1'
+            )
+        )
+
+def test_SymbolTreeNode_err_invalid_op():
+    with pytest.raises(ParseError):
+        SymbolTreeNode(
+            get_symbols(
+                '¬'
             )
         )
 

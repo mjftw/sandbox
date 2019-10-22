@@ -3,6 +3,8 @@ class ParseError(Exception):
 
 
 class SymbolTreeNode:
+    supported_operators = ['+', '-', '/', '*', '^', '(', ')']
+
     def __init__(self, symbols):
         self.symbols = symbols
         self.children = []
@@ -94,11 +96,18 @@ class SymbolTreeNode:
     def _validate_symbols(self):
         last_s = None
         for s in self.symbols:
+            if symbol_is_op(s) and not self.op_is_valid(s):
+                raise ParseError('Invalid operator {}'.format(s))
             if symbol_is_op(last_s) and symbol_is_op(s):
                 raise ParseError(
                     'Invalid syntax at operators {}, {} in {}'.format(
                         last_s, s, self.symbols))
             last_s = s
+
+    def op_is_valid(self, s):
+        return (
+            s in self.supported_operators
+        )
 
     def _find_children_brackets(self):
         open_bracket_pos = []
@@ -167,7 +176,7 @@ class SymbolTreeNode:
 def calculate(eqation_str):
     return SymbolTreeNode(get_symbols(eqation_str)).calculate()
 
-def _str_to_num(num_str):
+def str_to_num(num_str):
     if '.' in num_str:
         num = float(num_str)
     else:
@@ -180,9 +189,6 @@ def get_symbols(in_str):
 
     symbols = []
 
-    valid_operators = ['+', '-', '/', '*', '^', '(', ')']
-    whitespace = [' ', '\t']
-
     current_num = ''
     for c in in_str:
         if c.isdigit() or c == '.':
@@ -192,31 +198,35 @@ def get_symbols(in_str):
                 current_num = str(c)
             continue
         elif current_num:
-            symbols.append(_str_to_num(current_num))
+            symbols.append(str_to_num(current_num))
             current_num = ''
 
-        if c in valid_operators:
+        if symbol_is_op(c):
             symbols.append(c)
-        elif c in whitespace:
+        elif symbol_is_whitespace(c):
             pass
         else:
             raise ParseError('Invalid symbol: "{}"'.format(c))
 
     if current_num:
-        symbols.append(_str_to_num(current_num))
+        symbols.append(str_to_num(current_num))
 
     return symbols
 
 def symbol_is_op(s):
     return (
-        s is not None and
-        not isinstance(s, int) and
-        not isinstance(s, float) and
-        not isinstance(s, SymbolTreeNode)
+        isinstance(s, str) and
+        len(s) == 1 and
+        not symbol_is_whitespace(s)
     )
 
 def symbol_is_num(s):
     return (
         isinstance(s, int) or
         isinstance(s, float)
+    )
+
+def symbol_is_whitespace(s):
+    return (
+        s in [' ', '\t']
     )

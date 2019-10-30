@@ -16,7 +16,8 @@ class MQTTSensor:
         self.publish_qos = publish_qos if publish_qos is not None else 1
         self.retain_value = read_interval or False
 
-        self.connected = False
+        self._connected = False
+        self._connecting = False
 
         # MQTT client
         self._client = None
@@ -25,37 +26,59 @@ class MQTTSensor:
         self._read_timer_running = False
 
     def on_message(self, client, userdata, message):
+        ''' Impliment this callback if you want to recieve messages '''
         pass
 
     def on_connect(self, client, userdata, flags, rc):
+        ''' Impliment this callback if you want to act on connect '''
         pass
 
     def on_disconnect(self, client, userdata, rc):
+        ''' Impliment this callback if you want to act on disconnect '''
         pass
 
     def read(self):
+        ''' Read and return sensor value. This function must be implemented '''
         raise NotImplementedError
 
     @property
     def reading(self):
+        ''' Is a periodic read ongoing? '''
         return self._read_timer_running
 
+    @property
+    def connected(self):
+        ''' Is client connected to MQTT broker? '''
+        return self._connected
+
     def start(self):
-        self._start_client()
-        self._start_read_timer()
+        ''' Connect to MQTT broker and start publishing sensor values '''
+        if not self._connected:
+            self._start_client()
+        if not self._read_timer_running:
+            self._start_read_timer()
 
     def stop(self):
+        ''' Disconnect from MQTT broker and stop reading sensor '''
         self._stop_read_timer()
         self._stop_client()
 
     def read_and_publish(self):
+        ''' Read sensor value and publish. Connect to broker if needed. '''
+        # Connect to client if not connected
+        if not self._client or not self._connected:
+            self._start_client()
+
+        # Spin until connected
+        while self._connecting:
+            time.sleep(0.1)
+
+        if not self._connected:
+            raise RuntimeError(
+                'No connection to MQTT broker at {}:{}'.format(
+                    self.broker_host, self.broker_port))
+
         data = self.read()
-
-        if not self._client:
-            return
-
-        if not self.connected:
-            return
 
         self._client.publish(
             topic=self.publish_topic,
@@ -63,6 +86,8 @@ class MQTTSensor:
             qos=self.publish_qos,
             retain=self.retain_value
         )
+
+        return data
 
     def _start_read_timer(self):
         if not self._read_timer_running:
@@ -96,15 +121,18 @@ class MQTTSensor:
             host=self.broker_host,
             port=self.broker_port
         )
+        self._connecting = True
 
         self._client.loop_start()
 
     def _stop_client(self):
-        self._client.loop_stop()
+        if self._client:
+            self._client.loop_stop()
         self._client = None
 
     def _on_connect(self, *args, **kwargs):
-        self.connected = True
+        self._connected = True
+        self._connecting = False
 
         if self.subscribe_topic:
             self._client.subscribe(self.subscribe_topic)
@@ -112,6 +140,7 @@ class MQTTSensor:
         self.on_connect(*args, **kwargs)
 
     def _on_disconnect(self, *args, **kwargs):
-        self.connected = False
+        self._connected = False
+        self._connecting = False
 
         self.on_disconnect(*args, **kwargs)

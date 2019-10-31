@@ -45,6 +45,8 @@ class MQTTSensor:
             messages? Setting this to True causes the broker to store the
             retained message and corresponding QoS for the topic.
             Default is False.
+        keepalive (int, optional): The keepalive timeout for the client in
+            seconds. Default is 60.
         will (dict, optional): A dict containing parameters for the client's
             last will and testiment:
             will= {
@@ -59,7 +61,8 @@ class MQTTSensor:
     '''
     def __init__(self, publish_topic, subscribe_topic=None,
                  broker_host=None, broker_port=None, publish_qos=None,
-                 read_interval=None, retain_value=None, will=None):
+                 read_interval=None, retain_value=None, keepalive=None,
+                 will=None):
         self.publish_topic = publish_topic
 
         self.subscribe_topic = subscribe_topic
@@ -68,6 +71,7 @@ class MQTTSensor:
         self.read_interval = read_interval or 10
         self.publish_qos = publish_qos if publish_qos is not None else 0
         self.retain_value = retain_value or False
+        self.keepalive = keepalive or 60
 
         if will and 'topic' not in will:
             raise AttributeError('will must have "topic" key')
@@ -186,7 +190,8 @@ class MQTTSensor:
 
         self._client.connect(
             host=self.broker_host,
-            port=self.broker_port
+            port=self.broker_port,
+            keepalive=self.keepalive
         )
         self._connecting = True
 

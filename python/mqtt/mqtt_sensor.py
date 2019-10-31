@@ -47,9 +47,14 @@ class MQTTSensor:
             Default is False.
         will (dict, optional): A dict containing parameters for the client's
             last will and testiment:
-            will= {‘topic’: “<topic>”, ‘payload’:”<payload”>, ‘qos’:<qos>, ‘retain’:<retain>}.
-            Topic is required, other parameters are optional and will default to None, 0,
-            and False respectively.
+            will= {
+                ‘topic’: “<topic>”,
+                ‘payload’:”<payload”>,
+                ‘qos’:<qos>,
+                ‘retain’:<retain>
+            }
+            Topic is required, other parameters are optional and will default
+            to None, 0, and False respectively.
             Default is None (no will).
     '''
     def __init__(self, publish_topic, subscribe_topic=None,

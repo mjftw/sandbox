@@ -1,8 +1,16 @@
 import paho.mqtt.client as mqtt
 import threading
 import time
-from datetime import datetime
 
+
+# TODO: Add security
+#   - See: https://www.hivemq.com/mqtt-security-fundamentals/
+#   - Authentication with username and password:
+#     https://www.hivemq.com/blog/mqtt-security-fundamentals-authentication-username-password/
+#   - Authorisation
+#     https://www.hivemq.com/blog/mqtt-security-fundamentals-authorization/
+#   - Encryption TLS/SSL
+#     https://www.hivemq.com/blog/mqtt-security-fundamentals-tls-ssl/
 
 class MQTTSensor:
     ''' MQTT based sensor base class
@@ -230,12 +238,12 @@ class MQTTSensor:
         self._connecting = True
 
         timeout = 5
-        start_time = datetime.now()
+        seconds_passed = 0
         while self._connecting:
-            seconds_passed = (datetime.now() - start_time).total_seconds()
             if seconds_passed > timeout:
                 raise ConnectionError('Timeout waiting to connect to MQTT broker')
             time.sleep(0.1)
+            seconds_passed += 0.1
 
         # Publish birth message
         if self.birth_message:

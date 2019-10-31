@@ -4,6 +4,48 @@ import time
 
 
 class MQTTSensor:
+    ''' MQTT based sensor base class
+
+    This class can be inherited in order to allow sensor read values to
+    be published to an MQTT broker, and any clients that are subscribed.
+
+    The inheriting class must impliment the read() method.
+    This method should have the code required to read a value from
+    the sensor, and return it.
+
+    Optionally the inheriting class can impliment the following methods:
+    * on_connect() - Callback called on broker connection.
+    * on_disconnect() - Callback called on broker disconnection.
+    * on_message() - Callback called when message recieved on subscribed topic.
+        If a subscribe topic is given, this callback can be used to recieve
+        messages from the broker, process them as needed.
+        This could be used to recieve commands from another MQTT client.
+
+    For infomation on the arguments these methods take, see:
+        https://pypi.org/project/paho-mqtt/
+
+    Args:
+        publish_topic (:obj:`str`): Topic branch to publish sensor readings to.
+        subscribe_topic (:obj:`str`, optional): Topic branch to subscuribe to
+            in order to recieve messages. Default is None.
+        broker_host (:obj:`str`, optional): Host address of MQTT broker server.
+            Default is 127.0.0.1 (localhost).
+        broker_port (int, optional): Connection port of MQTT broker server.
+            Default is 1883 (default unsecured MQTT port)
+        publish_qos (int, optional): Quality of Service level to be used when
+            publishing messages to the MQTT server.
+            Ensure that the broker recieves messages
+            0: At most once,
+            1: At least once,
+            2: Exactly once
+            Default is 1
+        read_interval (float, optional): Interval in seconds at when sensor
+            values should be read, and published to MQTT topic. Default is 1.
+        retain_value (bool, optional): Should the retain flag be set on MQTT
+            messages? Setting this to True causes the broker to store the
+            retained message and corresponding QoS for the topic.
+            Default is False.
+    '''
     def __init__(self, publish_topic, subscribe_topic=None,
                  broker_host=None, broker_port=None, publish_qos=None,
                  read_interval=None, retain_value=None):
@@ -64,7 +106,10 @@ class MQTTSensor:
         self._stop_client()
 
     def read_and_publish(self):
-        ''' Read sensor value and publish. Connect to broker if needed. '''
+        ''' Read sensor value and publish. Connect to broker if needed.
+        Returns:
+            Sensor read value
+        '''
         # Connect to client if not connected
         if not self._client or not self._connected:
             self._start_client()

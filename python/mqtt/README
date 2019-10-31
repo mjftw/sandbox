@@ -1,0 +1,5 @@
+MQTT Sensor abstract base class implimentation in mqtt_sensor.py
+Example usage in mqtt_sensor_example.py
+
+This class uses paho-mqtt client, for further information see:
+https://pypi.org/project/paho-mqtt/

@@ -127,7 +127,6 @@ class MQTTSensor:
             self.client_id = get_mac_address()
 
         self._connected = False
-        self._connecting = False
 
         # MQTT client
         self._client = None
@@ -245,11 +244,9 @@ class MQTTSensor:
         self._client.loop_start()
 
         # Spin until connected
-        self._connecting = True
-
         timeout = 5
         seconds_passed = 0
-        while self._connecting:
+        while not self.connected:
             if seconds_passed > timeout:
                 raise ConnectionError('Timeout waiting to connect to MQTT broker')
             time.sleep(0.1)
@@ -271,7 +268,6 @@ class MQTTSensor:
 
     def _on_connect(self, *args, **kwargs):
         self._connected = True
-        self._connecting = False
 
         if self.subscribe_topic:
             self._client.subscribe(self.subscribe_topic)
@@ -280,7 +276,6 @@ class MQTTSensor:
 
     def _on_disconnect(self, *args, **kwargs):
         self._connected = False
-        self._connecting = False
 
         self.on_disconnect(*args, **kwargs)
 

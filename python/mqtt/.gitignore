@@ -1,0 +1,3 @@
+# SSL certificates and keys
+*.crt
+*.key

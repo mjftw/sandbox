@@ -56,7 +56,7 @@ class MQTTSensor:
         self.broker_port = broker_port or 1883
         self.read_interval = read_interval or 1
         self.publish_qos = publish_qos if publish_qos is not None else 1
-        self.retain_value = read_interval or False
+        self.retain_value = retain_value or False
 
         self._connected = False
         self._connecting = False

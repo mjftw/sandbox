@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import threading
 import time
+from datetime import datetime
 
 
 class MQTTSensor:
@@ -209,12 +210,13 @@ class MQTTSensor:
         self._client.on_disconnect = self._on_disconnect
         self._client.on_message = self.on_message
 
-        self._client.will_set(
-            topic=self.will_message['topic'],
-            payload=self.will_message['payload'],
-            qos=self.will_message['qos'],
-            retain=self.will_message['retain']
-        )
+        if self.will_message:
+            self._client.will_set(
+                topic=self.will_message['topic'],
+                payload=self.will_message['payload'],
+                qos=self.will_message['qos'],
+                retain=self.will_message['retain']
+            )
 
         self._client.connect(
             host=self.broker_host,
@@ -226,7 +228,13 @@ class MQTTSensor:
 
         # Spin until connected
         self._connecting = True
+
+        timeout = 5
+        start_time = datetime.now()
         while self._connecting:
+            seconds_passed = (datetime.now() - start_time).total_seconds()
+            if seconds_passed > timeout:
+                raise ConnectionError('Timeout waiting to connect to MQTT broker')
             time.sleep(0.1)
 
         # Publish birth message

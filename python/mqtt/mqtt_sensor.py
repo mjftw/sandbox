@@ -47,9 +47,9 @@ class MQTTSensor:
             Default is False.
         keepalive (int, optional): The keepalive timeout for the client in
             seconds. Default is 60.
-        will (dict, optional): A dict containing parameters for the client's
-            last will and testiment:
-            will= {
+        birth_message (dict, optional): A dict containing parameters for the client's
+            birth message. This message is sent by the client upon connection.
+            birth_message = {
                 ‘topic’: “<topic>”,
                 ‘payload’:”<payload”>,
                 ‘qos’:<qos>,
@@ -57,12 +57,24 @@ class MQTTSensor:
             }
             Topic is required, other parameters are optional and will default
             to None, 0, and False respectively.
-            Default is None (no will).
+            Default is None (no birth message).
+        will_message (dict, optional): A dict containing parameters for the client's
+            last will and testiment. This message is sent to other clients by the
+            broker if the client disconnects unexpectedly.
+            will_message = {
+                ‘topic’: “<topic>”,
+                ‘payload’:”<payload”>,
+                ‘qos’:<qos>,
+                ‘retain’:<retain>
+            }
+            Topic is required, other parameters are optional and will default
+            to None, 0, and False respectively.
+            Default is None (no will message).
     '''
     def __init__(self, publish_topic, subscribe_topic=None,
                  broker_host=None, broker_port=None, publish_qos=None,
                  read_interval=None, retain_value=None, keepalive=None,
-                 will=None):
+                 birth_message=None, will_message=None):
         self.publish_topic = publish_topic
 
         self.subscribe_topic = subscribe_topic
@@ -73,9 +85,29 @@ class MQTTSensor:
         self.retain_value = retain_value or False
         self.keepalive = keepalive or 60
 
-        if will and 'topic' not in will:
-            raise AttributeError('will must have "topic" key')
-        self.will = will
+        # Set birth message
+        if birth_message:
+            if 'topic' not in birth_message:
+                raise AttributeError('birth_message must have "topic" key')
+            if 'payload' not in birth_message:
+                birth_message['payload'] = None
+            if 'qos' not in birth_message:
+                birth_message['qos'] = 0
+            if 'retain' not in birth_message:
+                birth_message['retain'] = False
+        self.birth_message = birth_message
+
+        # Set will message
+        if will_message:
+            if 'topic' not in will_message:
+                raise AttributeError('will_message must have "topic" key')
+            if 'payload' not in will_message:
+                will_message['payload'] = None
+            if 'qos' not in will_message:
+                will_message['qos'] = 0
+            if 'retain' not in will_message:
+                will_message['retain'] = False
+        self.will_message = will_message
 
         self._connected = False
         self._connecting = False
@@ -133,10 +165,6 @@ class MQTTSensor:
         if not self._client or not self._connected:
             self._start_client()
 
-        # Spin until connected
-        while self._connecting:
-            time.sleep(0.1)
-
         if not self._connected:
             raise RuntimeError(
                 'No connection to MQTT broker at {}:{}'.format(
@@ -182,10 +210,10 @@ class MQTTSensor:
         self._client.on_message = self.on_message
 
         self._client.will_set(
-            topic=self.will['topic'],
-            payload=self.will['payload'],
-            qos=self.will['qos'],
-            retain=self.will['retain']
+            topic=self.will_message['topic'],
+            payload=self.will_message['payload'],
+            qos=self.will_message['qos'],
+            retain=self.will_message['retain']
         )
 
         self._client.connect(
@@ -193,9 +221,22 @@ class MQTTSensor:
             port=self.broker_port,
             keepalive=self.keepalive
         )
-        self._connecting = True
 
         self._client.loop_start()
+
+        # Spin until connected
+        self._connecting = True
+        while self._connecting:
+            time.sleep(0.1)
+
+        # Publish birth message
+        if self.birth_message:
+            self._client.publish(
+                topic=self.birth_message['topic'],
+                payload=self.birth_message['payload'],
+                qos=self.birth_message['qos'],
+                retain=self.birth_message['retain']
+            )
 
     def _stop_client(self):
         if self._client:

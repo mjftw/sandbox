@@ -19,10 +19,16 @@ def main():
     sensor = MockMQTTSensor(
         publish_topic='sandbox/mock/tx',
         subscribe_topic='sandbox/mock/rx',
-        will={
-            'topic': 'sandbox/mock/dead',
-            'payload': 'I have died!',
-            'qos': 2,
+        birth_message={
+            'topic': 'sandbox/mock/state',
+            'payload': 'alive',
+            'qos': 1,
+            'retain': True
+        },
+        will_message={
+            'topic': 'sandbox/mock/state',
+            'payload': 'dead',
+            'qos': 1,
             'retain': True
         }
     )

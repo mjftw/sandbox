@@ -45,10 +45,16 @@ class MQTTSensor:
             messages? Setting this to True causes the broker to store the
             retained message and corresponding QoS for the topic.
             Default is False.
+        will (dict, optional): A dict containing parameters for the client's
+            last will and testiment:
+            will= {‘topic’: “<topic>”, ‘payload’:”<payload”>, ‘qos’:<qos>, ‘retain’:<retain>}.
+            Topic is required, other parameters are optional and will default to None, 0,
+            and False respectively.
+            Default is None (no will).
     '''
     def __init__(self, publish_topic, subscribe_topic=None,
                  broker_host=None, broker_port=None, publish_qos=None,
-                 read_interval=None, retain_value=None):
+                 read_interval=None, retain_value=None, will=None):
         self.publish_topic = publish_topic
 
         self.subscribe_topic = subscribe_topic
@@ -57,6 +63,10 @@ class MQTTSensor:
         self.read_interval = read_interval or 10
         self.publish_qos = publish_qos if publish_qos is not None else 0
         self.retain_value = retain_value or False
+
+        if will and 'topic' not in will:
+            raise AttributeError('will must have "topic" key')
+        self.will = will
 
         self._connected = False
         self._connecting = False
@@ -161,6 +171,13 @@ class MQTTSensor:
         self._client.on_connect = self._on_connect
         self._client.on_disconnect = self._on_disconnect
         self._client.on_message = self.on_message
+
+        self._client.will_set(
+            topic=self.will['topic'],
+            payload=self.will['payload'],
+            qos=self.will['qos'],
+            retain=self.will['retain']
+        )
 
         self._client.connect(
             host=self.broker_host,

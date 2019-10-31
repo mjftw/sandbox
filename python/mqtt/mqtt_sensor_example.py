@@ -18,7 +18,13 @@ class MockMQTTSensor(MQTTSensor):
 def main():
     sensor = MockMQTTSensor(
         publish_topic='sandbox/mock/tx',
-        subscribe_topic='sandbox/mock/rx'
+        subscribe_topic='sandbox/mock/rx',
+        will={
+            'topic': 'sandbox/mock/dead',
+            'payload': 'I have died!',
+            'qos': 2,
+            'retain': True
+        }
     )
 
     sensor.start()

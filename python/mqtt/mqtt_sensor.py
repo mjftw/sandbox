@@ -79,11 +79,14 @@ class MQTTSensor:
             Topic is required, other parameters are optional and will default
             to None, 0, and False respectively.
             Default is None (no will message).
+        client_id (:obj:`str`, optional): An ID string to be used by the client
+            when connecting to the broker. By default the MAC address of the
+            machine will be used.
     '''
     def __init__(self, publish_topic, subscribe_topic=None,
                  broker_host=None, broker_port=None, publish_qos=None,
                  read_interval=None, retain_value=None, keepalive=None,
-                 birth_message=None, will_message=None):
+                 birth_message=None, will_message=None, client_id=None):
         self.publish_topic = publish_topic
 
         self.subscribe_topic = subscribe_topic
@@ -117,6 +120,11 @@ class MQTTSensor:
             if 'retain' not in will_message:
                 will_message['retain'] = False
         self.will_message = will_message
+
+        if client_id is not None:
+            self.client_id = client_id
+        else:
+            self.client_id = get_mac_address()
 
         self._connected = False
         self._connecting = False
@@ -212,7 +220,9 @@ class MQTTSensor:
             self._read_timer_running = False
 
     def _start_client(self):
-        self._client = mqtt.Client()
+        self._client = mqtt.Client(
+            client_id=self.client_id
+        )
 
         self._client.on_connect = self._on_connect
         self._client.on_disconnect = self._on_disconnect
@@ -273,3 +283,13 @@ class MQTTSensor:
         self._connecting = False
 
         self.on_disconnect(*args, **kwargs)
+
+
+def get_mac_address():
+    ''' Helper function to get MAC address of machine and format it nicely '''
+    import uuid
+    import re
+
+    return ':'.join(
+        re.findall('..', '%012x' % uuid.getnode())
+    )

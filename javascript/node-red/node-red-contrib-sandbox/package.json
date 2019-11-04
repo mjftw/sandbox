@@ -1,0 +1,15 @@
+{
+    "author": "Merlin Webster <mwebster@witekio.com>",
+    "name": "node-red-contrib-sandbox",
+    "version": "0.0.1",
+    "description": "An example Hello World node for node-red",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "helloWorld": "hello-world-node/HelloWorld.js"
+        }
+    }
+}

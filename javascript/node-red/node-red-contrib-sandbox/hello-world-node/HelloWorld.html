@@ -1,0 +1,36 @@
+<!-- Define how node should display in GUI -->
+<script type="text/javascript">
+    RED.nodes.registerType('Hello World', {
+        category: 'sandbox',
+        color: '#0390fc',
+        defaults: {
+            name: {value: ''}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "github-mjftw.png",
+        label: function() {
+            return this.name || "Hello World";
+        }
+    });
+</script>
+
+<!--
+    Add fields to node properties tab:
+    Name and Topic, both with the tag icon
+-->
+<script type="text/x-red" data-template-name="Hello World">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+</script>
+
+<!-- Add node decription text -->
+<script type="text/x-red" data-help-name="Hello World">
+    <p>Every time a message is recieved, the text "Hello World" is output </br></p>
+</script>

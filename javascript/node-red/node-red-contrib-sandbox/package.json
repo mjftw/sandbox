@@ -9,7 +9,8 @@
     ],
     "node-red": {
         "nodes": {
-            "helloWorld": "hello-world-node/HelloWorld.js"
+            "helloWorld": "hello-world-node/HelloWorld.js",
+            "screenshot": "screenshot-node/screenshot.js"
         }
     }
 }

@@ -1,0 +1,34 @@
+<!-- Define how node should display in GUI -->
+<script type="text/javascript">
+    RED.nodes.registerType('Screenshot', {
+        category: 'sandbox',
+        color: '#0390fc',
+        defaults: {
+            name: {value: ''}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "github-mjftw.png",
+        label: function() {
+            return this.name || "Screenshot";
+        }
+    });
+</script>
+
+<!--
+    Add fields to node properties tab:
+    Name and Topic, both with the tag icon
+-->
+<script type="text/x-red" data-template-name="Screenshot">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Add node decription text -->
+<script type="text/x-red" data-help-name="Screenshot">
+    <p>Take a screenshot every time a message is recieved and output it in png format.</br>
+    Output message payload is the image data.
+    </p>
+</script>

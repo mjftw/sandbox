@@ -9,14 +9,23 @@ def main(filename):
     print('\n')
     with Input(keynames='curses') as input_generator:
         for char in (c for c in input_generator
-                if c in ['KEY_UP', 'KEY_DOWN']):
+                if c in ['KEY_UP', 'KEY_DOWN', 'KEY_LEFT', 'KEY_RIGHT']):
             value = read_value(filename)
             if char == 'KEY_UP':
                 value += 1
                 bar_char = '>'
+            elif char == 'KEY_RIGHT':
+                value += 0.1
+                bar_char = '>'
             elif char == 'KEY_DOWN':
                 value -= 1
                 bar_char = '<'
+            elif char == 'KEY_LEFT':
+                value -= 0.1
+                bar_char = '<'
+
+            if isinstance(value, float):
+                value = round(value, 5)
 
             write_value(value, filename)
             reprint(f'{value}\n{bar_char * int(value)}')

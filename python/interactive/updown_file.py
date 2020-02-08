@@ -61,8 +61,7 @@ def reprint(string):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('filename')
+    parser.add_argument('filename')
 
-    # args = parser.parse_args()
-    # main(args.filename)
-    main('value')
+    args = parser.parse_args()
+    main(args.filename)

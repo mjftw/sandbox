@@ -7,6 +7,11 @@ class Plot:
         self.name = name
         self.matrix = np.ones(shape=[height, width, 3], dtype=np.uint8)
 
+    def __iter__(self):
+        for x in range(0, self.width):
+            for y in range(0, self.height):
+                yield (x, y, tuple(self.matrix[x][y]))
+
     @property
     def width(self):
         return self.matrix.shape[0]

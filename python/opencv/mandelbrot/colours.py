@@ -1,3 +1,6 @@
+from random import randint
+
+
 def _hex_is_valid(hexstr):
     try:
         int(hexstr, 16)
@@ -10,14 +13,14 @@ def _pad_hex(hexstr):
     return hexstr[::-1].zfill(6)[::-1]
 
 class Colour:
-    def __init__(self, hexstr, name):
+    def __init__(self, hexstr, name=None):
         hexstr = _pad_hex(hexstr)
 
         if not _hex_is_valid(hexstr):
             raise AttributeError(f'Invalid hex: "{hexstr}"')
 
         self._hexstr = hexstr
-        self.name = name
+        self.name = name or ''
 
 
     @property
@@ -27,6 +30,9 @@ class Colour:
     @property
     def hex(self):
         return self._hexstr
+
+def random():
+    return Colour(f'{randint(0, 255):x}{randint(0, 255):x}{randint(0, 255):x}')
 
 air_force_blue_raf = Colour('5d8aa8', "Air Force Blue (Raf)")
 air_force_blue_usaf = Colour('00308f', "Air Force Blue (Usaf)")

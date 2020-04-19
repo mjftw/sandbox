@@ -1,7 +1,9 @@
 from random import randint
+import time
 
 from plot import Plot
 import colours
+
 
 MAX_ITERATIONS = 100
 ITER_COL_MAP = [colours.random().rgb for x in range(0, MAX_ITERATIONS)]
@@ -31,7 +33,6 @@ def find_when_point_leaves_mandelbrot_set(x, y, max_iterations=10):
 
     return None
 
-
 def transform_point(x, y, rgb, x_max, y_max, max_iterations):
     x_norm = (4*x/x_max) - 2
     y_norm = (4*y/y_max) - 2
@@ -41,8 +42,17 @@ def transform_point(x, y, rgb, x_max, y_max, max_iterations):
 
 def main():
     plot = Plot(height=1000, width=1000, name='mandelbrot')
+    iterations = 100
 
-    plot.map(transform_point, plot.width, plot.height, 100)
+    start_time = time.time()
+
+    plot.map(transform_point, plot.width, plot.height, iterations)
+
+    elapsed_time = time.time() - start_time
+
+    print('Calculated mandelbrot set over {} iterations'
+        ' for {} points in {}s'.format(
+            iterations, plot.width * plot.height, elapsed_time))
 
     plot.show()
 

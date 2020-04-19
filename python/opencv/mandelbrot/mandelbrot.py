@@ -32,17 +32,17 @@ def find_when_point_leaves_mandelbrot_set(x, y, max_iterations=10):
     return None
 
 
+def transform_point(x, y, rgb, x_max, y_max, max_iterations):
+    x_norm = (4*x/x_max) - 2
+    y_norm = (4*y/y_max) - 2
+
+    iter_out = find_when_point_leaves_mandelbrot_set(y_norm, x_norm, max_iterations)
+    return ITER_COL_MAP[iter_out or 0]
+
 def main():
-    plot = Plot(height=720, width=1280, name='mandelbrot')
+    plot = Plot(height=1000, width=1000, name='mandelbrot')
 
-
-    for x, y, rgb in plot:
-        x_norm = (4*x/plot.width) - 2
-        y_norm = (4*y/plot.height) - 2
-
-        iter_out = find_when_point_leaves_mandelbrot_set(y_norm, x_norm, 100)
-
-        plot.set_point(x, y, ITER_COL_MAP[iter_out or 0])
+    plot.map(transform_point, plot.width, plot.height, 100)
 
     plot.show()
 

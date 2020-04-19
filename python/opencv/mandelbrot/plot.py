@@ -33,6 +33,18 @@ class Plot:
         # Reverse rgb as OpenCV uses BGR
         self.matrix[x][y] = list(rgb)[::-1]
 
+    def map(self, func, *args, **kwargs):
+        ''' Apply function to ever point in the plot
+        function prototype should match:
+            >>> def func(x, y, rgb, *args, **kwargs):
+                ...
+        Where x and y are point coordinates and rgb is the current rgb value
+        at that point. Function should return a new rgb tuple.
+        '''
+
+        for x, y, rgb in self:
+            self.set_point(x, y, func(x, y, rgb, *args, **kwargs))
+
     def show(self):
         cv2.imshow(self.name, self.matrix)
         cv2.waitKey(0)

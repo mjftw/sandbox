@@ -1,6 +1,8 @@
 import React from 'react';
+import {connect} from 'react-redux';
+import {addTodo} from '../redux/actions';
 
-export default function AddTodo(props) {
+function AddTodo(props) {
     const [ value, setValue ] = React.useState('');
     return (
         <div>
@@ -16,3 +18,8 @@ export default function AddTodo(props) {
         </div>
     );
 }
+
+export default connect(
+    null,
+    {addTodo}
+)(AddTodo);

@@ -1,16 +1,18 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import Todo from './Todo';
 import AddTodo from './AddTodo';
 
-export default function TodoList(props) {
+
+function TodoList(props) {
     return (
         <div>
             <AddTodo addTodo={props.addTodo} />
             {props.todos.map(todo =>
                 <Todo
-                    id={todo.idx}
+                    key={todo.id}
                     name={todo.name}
-                    idx={todo.idx}
+                    id={todo.id}
                     setCompleted={props.setCompleted}
                     completed={todo.completed}
                 />
@@ -18,3 +20,13 @@ export default function TodoList(props) {
         </div>
     );
 }
+
+
+function mapStateToProps(state) {
+    const todos = state.todos || [];
+    return {todos};
+}
+
+export default connect(
+    mapStateToProps
+)(TodoList);

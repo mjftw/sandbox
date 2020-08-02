@@ -55,7 +55,13 @@ fibonacci' 1 = 1
 fibonacci' 2 = 1
 fibonacci' n = fibonacci (n-2) + fibonacci (n-1)
 
+-- Much more efficient but uglier version
+_fibonacci_helper'' :: Int -> Int -> Int -> Int -> Int
+_fibonacci_helper'' n idx prev curr
+    | idx >= n = curr
+    | otherwise = _fibonacci_helper'' n (idx+1) curr (prev+curr)
+
 fibonacci'' :: Int -> Int
 fibonacci'' n
-    | n <=2     = 1
-    | otherwise = fibonacci (n-2) + fibonacci (n-1)
+    | n <=2 = 1
+    | otherwise = _fibonacci_helper'' n 1 1 1

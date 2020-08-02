@@ -34,5 +34,14 @@ firstNFibonacciOver n max = [fibonacci x | x <- [1..n], x > max]
 -- FizzBuzz implementation - create a list of n FizzBuzz values
 strDefault str val = if str == "" then val else str
 strValIfDivBy x y value = if (x `mod` y) == 0 then value else ""
-
 fizzBuzz n = [strDefault ((strValIfDivBy x 3 "Fizz") ++ (strValIfDivBy x 5 "Buzz")) (show x) | x <- [1..n]]
+
+allUpperLowerCombos = [x:y:[] | x <- ['a'..'z'], y <- ['A'..'Z']]
+
+length' xs = sum [1 | _ <- xs]
+
+-- Some matrix maths
+-- v = [x1, x2, x3]
+
+dot :: [Int] -> [Int] -> Int
+dot v1 v2 = sum [v1n + v2n | v1n <- v1, v2n <- v2]

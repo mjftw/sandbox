@@ -6,6 +6,7 @@ doubleLessThan x thresh = if x < thresh
                             then doubleMe x
                             else x
 
+-- Horribly inefficient implementation
 fibonacci n = if (n <= 2)
                 then 1
                 else fibonacci (n-1) + fibonacci (n-2)
@@ -45,3 +46,16 @@ length' xs = sum [1 | _ <- xs]
 
 dot :: [Int] -> [Int] -> Int
 dot v1 v2 = sum [v1n + v2n | v1n <- v1, v2n <- v2]
+
+-- calculate Pi using Leibniz formula
+piN n = 4 * (1 - (sum [1/x | x <- [3, 7..n]]) + (sum [1/x | x <- [5, 9..n]]))
+
+fibonacci' :: Int -> Int
+fibonacci' 1 = 1
+fibonacci' 2 = 1
+fibonacci' n = fibonacci (n-2) + fibonacci (n-1)
+
+fibonacci'' :: Int -> Int
+fibonacci'' n
+    | n <=2     = 1
+    | otherwise = fibonacci (n-2) + fibonacci (n-1)
